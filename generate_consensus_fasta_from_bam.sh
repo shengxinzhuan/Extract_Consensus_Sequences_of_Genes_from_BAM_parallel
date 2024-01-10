@@ -39,7 +39,7 @@ for file in "$output_dir"/*.bed ; do
 	subbam_name="$output_dir/${gene_name}_subset.bam"
 	consensus_name="$output_dir/${gene_name}_consensus.fa"
 	echo "samtools view -hb -L $file $bam_file > $subbam_name" >> "$commands_file1"
-	echo "samtools consensus --show-ins yes --show-del yes -H $subbam_name -o $consensus_name" >> "$commands_file2"
+	echo "samtools consensus --show-ins yes --show-del yes -H 0.15 $subbam_name -o $consensus_name" >> "$commands_file2"
 done
 
 echo "Start Extract ~"
