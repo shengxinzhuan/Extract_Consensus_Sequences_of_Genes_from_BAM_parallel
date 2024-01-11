@@ -62,3 +62,6 @@ cat *.tree | sort | uniq -c > total.topo.stat
 ```
 In this way, in the file 'total.topo.stat', we have obtained all the unique topological structures of trees present along with their respective counts.<br />
 However, it's worth noting that the tree structure presented is not yet the most parsimonious. Taking an example with three species plus one outgroup, there could be several possible scenarios.<br />
+![image](https://github.com/shengxinzhuan/Extract_Consensus_Sequences_of_Genes_from_BAM_parallel/blob/main/tree_topology.jpg)
+As we can see, even a phylogenetic tree for just four species could including twelve distinct tree topologies (with each topology having four equivalent representations in string form).<br />
+Of course, such a scenario is more commonly encountered in groups that have undergone recent radiation events; however, it is relatively infrequent among most other taxa. Yet, the exponential increase in tree topology complexity as species numbers grow is daunting..<br />
