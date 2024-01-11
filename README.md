@@ -5,6 +5,10 @@ This is a series of scripts on the rapid construction of target interval consens
 samtools<br />
 parallel<br />
 seqkit<br />
+mafft or muscle <br />
+trimal or gblock <br />
+ete3 (python package, verison:3.1.3, which can be install using pip)<br />
+iqtree2 or raxml-ng <br />
 # Usage
 The completed part consists of four scripts: generate_consensus_fasta_from_bam.sh, rename_fasta.sh, merge_all_sample_gene_pair.sh, and filtered_fasta.sh. Their functionalities are as follows:
 ## generate_consensus_fasta_from_bam.sh
@@ -64,4 +68,30 @@ In this way, in the file 'total.topo.stat', we have obtained all the unique topo
 However, it's worth noting that the tree structure presented is not yet the most parsimonious. Taking an example with three species plus one outgroup, there could be several possible scenarios.<br />
 ![image](https://github.com/shengxinzhuan/Extract_Consensus_Sequences_of_Genes_from_BAM_parallel/blob/main/tree_topology.jpg)
 As we can see, even a phylogenetic tree for just four species could including twelve distinct tree topologies (with each topology having four equivalent representations in string form).<br />
-Of course, such a scenario is more commonly encountered in groups that have undergone recent radiation events; however, it is relatively infrequent among most other taxa. Yet, the exponential increase in tree topology complexity as species numbers grow is daunting..<br />
+Of course, such a scenario is more commonly encountered in groups that have undergone recent radiation events; however, it is relatively infrequent among most other taxa. Yet, the exponential increase in tree topology complexity as species numbers grow is daunting.<br />
+So here, I present a method based on the ete3 package for more efficient handling when dealing with a larger number of species.<br />
+```
+# First, remove all branch length information from all bestTree files.
+mkdir -p ../topo_stat/
+for i in *.bestTree ; do nw_topology $i > ../topo_stat/${i%.*}.topo.tree ; done
+cd ../topo_stat/
+cat *.tree > total.tree
+python3 newick_stat.py total.tree ouput_stats.txt
+# The output like this:
+Unique topologies and their counts:
+Topology: (,O);(,A);(B,C)
+Count: 20
+Tree Newick: (((B:1,C:1)1:1,A:1)1:1,O:1);
+```
+# Topological structure heatmap visualization
+After obtaining the tree count in the statistical analysis, we also aspire to generate a heatmap representing the topological distribution of trees along the chromosomes. To achieve this, it is necessary first to normalize the structures of the trees and then categorize them according to our custom classification scheme. Finally, we will plot the heatmap to illustrate the distribution.<br />
+Firstly, we concatenate the gene names with the tree topologies, taking into account that the fourth column in our BED file contains the gene names. Moreover, since the current filenames consist of the gene names followed by a specific suffix, I simply need to remove the string following the “.” character. In order to iterate through all files, I have written a simple script to process them. Ultimately, the resulting files will contain two columns: the first one for the gene names, and the second one for the original tree topologies (as output from the nw_topology process).<br />
+```
+bash merge_gene_names_with_tree_topo.sh <input_folder>
+# The outputs were in an folder "merge_gene_and_topo" which localed in /<input_folder_path>/../merge_gene_and_topo
+cat merge_gene_and_topo/*.tree > total.gene_topo.txt
+```
+Subsequently, we utilize the ete3 package to process this file, harmonizing the topological structures within it into unique forms (ensuring consistency with the results obtained in the previous step). At this stage, we employ another script called "gene_with_only_topo.py".<br />
+```
+python gene_with_only_topo.py total.gene_topo.txt total.gene_topo.resort.txt
+```
