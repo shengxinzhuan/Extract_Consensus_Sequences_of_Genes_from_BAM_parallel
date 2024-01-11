@@ -49,3 +49,16 @@ for i in *.fa ; do echo "raxml-ng --all --msa $i --threads 1 --model GTR+F+I --b
 parallel -j 10 < job_raxml
 ```
 The obtained "bestTree" file represents the consensus FASTA tree-building result, while the support values can be found in the "support" file.<br />
+## Phylogenetic tree topology statistics
+Here, we utilize software called "Newick Utilities" (which can be installed using conda) to remove branch length and other such information from the phylogenetic tree, retaining only its topology.<br />
+```
+# First, remove all branch length information from all bestTree files.
+mkdir -p ../topo_stat/
+for i in *.bestTree ; do nw_topology $i > ../topo_stat/${i%.*}.topo.tree ; done
+
+# Subsequently, employ  sort and uniq to statistically analyze the distinct topological structures present (this information will be required for visualization purposes in subsequent steps).
+cd ../topo/stat/
+cat *.tree | sort | uniq -c > total.topo.stat
+```
+In this way, in the file 'total.topo.stat', we have obtained all the unique topological structures of trees present along with their respective counts.<br />
+However, it's worth noting that the tree structure presented is not yet the most parsimonious. Taking an example with three species plus one outgroup, there could be several possible scenarios.<br />
