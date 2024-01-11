@@ -2,6 +2,13 @@ import sys
 from collections import defaultdict
 from ete3 import Tree, TreeNode
 
+#====================================================================================================================
+# Author: Alfred Hou
+# E-mail: 825526231@qq.com
+# Any question can send the e-mail to me
+# Time: 2024/01/11
+#====================================================================================================================
+
 def get_topology_string(tree):
     # Sort each node by the name of its children and generate a string representing the topology of that node 
     topology_str = []
