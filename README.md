@@ -24,8 +24,18 @@ The purpose of this script is to extract subsets of a given BAM file based on a 
 # The bed file refers to a BED  file extracted according to one's specific needs (it can be genes, exon, intron, or TE structure).
 # bed file format
 # <chr>\t<start>\t<end>\t<gene_name>
+
 # Demo Usage:
 bash generate_consensus_fasta_from_bam.sh sample.mkdup.bam gene.bed sample_consensus_dir 30
+
+# Demo Output:
+|-sample_consensus_dir/ # output_folder
+|--raw_bed/ # The bed files split from the input bed file
+|--sub_bam/ # The region bam split from input bam and bed file
+|--raw_consensus/ # The consensus fasta generate from region bam
+|--job_extract.txt # The commandline for extract region bam
+|--job_consensus.txt # The commandline for generate consensus fasta
+|--job_replace_N.txt # The commandline to replace "*" into "N" for consensus fasta
 ```
 ## rename_fasta.sh
 Usage: bash rename_fasta.sh <input_folder> <replace_name><br />
