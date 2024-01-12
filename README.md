@@ -30,9 +30,9 @@ bash generate_consensus_fasta_from_bam.sh sample.mkdup.bam gene.bed sample_conse
 
 # Demo Output:
 |-sample_consensus_dir/ # output_folder
-|--raw_bed/ # The bed files split from the input bed file
-|--sub_bam/ # The region bam split from input bam and bed file
-|--raw_consensus/ # The consensus fasta generate from region bam
+|    |--raw_bed/ # The bed files split from the input bed file
+|    |--sub_bam/ # The region bam split from input bam and bed file
+|    |--raw_consensus/ # The consensus fasta generate from region bam
 |--job_extract.txt # The commandline for extract region bam
 |--job_consensus.txt # The commandline for generate consensus fasta
 |--job_replace_N.txt # The commandline to replace "*" into "N" for consensus fasta
@@ -40,14 +40,59 @@ bash generate_consensus_fasta_from_bam.sh sample.mkdup.bam gene.bed sample_conse
 ## rename_fasta.sh
 Usage: bash rename_fasta.sh <input_folder> <replace_name><br />
 This script renames the extracted consensus FASTA sequences to a standardized species name or sample identifier. The output of the script is a rename_consensus folder generated in the same directory as the specified folder. Inside this folder, you will find the consensus FASTA sequences with their names modified accordingly.<br />
+```
+# Demo Usage:
+bash rename_fasta.sh sample_consensus_dir/raw_consensus sample_name
+
+# The difference before and after using this method is that the sequence names in the originally extracted FASTA files (which are typically chromosome numbers or scaffold IDs by default) will be replaced with a uniform name.
+# >chr1\nNNNNNNNNN ----> >sample_name\nNNNNNNNN
+```
 ## merge_all_sample_gene_pair.sh
 Usage: bash merge_all_sample_gene_pair.sh <main_folder> <output_folder><br />
 The purpose of this script is to merge consensus FASTA sequences obtained from several samples based on gene names, for subsequent single-gene tree construction. The basic logic involves traversing all folders in the current directory, identifying the rename_consensus folder within each folder. It then combines all consensus FASTA sequences with identical gene names across samples into a new FASTA file, and outputs it to a new folder named raw_seq within the same directory.<br />
+```
+# Demo Usage:
+bash merge_all_sample_gene_pair.sh total_sample_folder merge_sample_folder
+
+input folder:
+|-total_sample_folder
+|--sample1
+|    |--rename_consensus
+|--sample2
+|    |--rename_consensus  
+|--sample3
+|    |--rename_consensus
+|--sample4
+|    |--rename_consensus
+
+output folder:
+|-merge_sample_folder
+|      |--raw_seq
+```
 ## filtered_fasta.sh
 Usage: bash filtered_fasta.sh <input_folder> <output_folder> <threshold_percentage><br />
 Due to issues related to genetic relationships or sequencing coverage, certain regions in the consensus FASTA sequences inevitably contain nucleotides represented by 'N'. This can affect the accuracy of our phylogenetic tree construction. Therefore, it is necessary to filter out sequences that exceed a certain threshold. <br />
 The script requires three parameters: the path to the folder containing consensus FASTA files (it will traverse all files with the *.fa suffix in the specified directory), the path to the output folder (where two folders, 'fail_seq' and 'filtered_seq', will be created to store sequences exceeding or below a certain threshold), and the percentage threshold for the proportion of 'N' bases in the sequences (sequences with a proportion exceeding this value will be filtered out; for example, inputting 70 means that if the proportion of 'N' bases in any sequence in 1.fa exceeds 70%, then 1.fa will be filtered out and not used as input for subsequent tree construction). <br />
 The script logic involves traversing all *.fa files in the specified directory, utilizing seqkit's fx2tab to calculate the proportions of five bases (A, G, T, G, N) and generating a table with these proportions in the directory. Subsequently, by traversing this table, the script determines whether the proportion of 'N' bases in a sequence exceeds the set threshold. Sequences exceeding the threshold are copied to the 'fail_seq' folder, while sequences below the threshold are copied to the 'filtered_seq' folder.<br />
+```
+# Demo Usage:
+bash filtered_fasta.sh merge_sample_folder/raw_seq merge_sample_folder 70
+
+input_folder:
+|-merge_sample_folder
+|       |--raw_seq
+             |---1.fa,2.fa,3.fa,4.fa
+
+output_folder:
+|-merge_sample_folder
+|       |--raw_seq
+|            |---1.fa,2.fa,3.fa,4.fa
+|            |---1.stats,2.stats,3.stats,4.stats # the AGCTN contents with per fasta files
+|       |--fail_seq # these fasta files with N >=70%
+|            |---1.fa
+|       |--filtered_seq # these fasta files with N < 70%
+|            |---2.fa,3.fa,4.fa
+```
 ## Phylogenetic tree construction
 This part is relatively straightforward and can be accomplished with a few shell for loops nested with parallel. Here's an example:<br />
 ```
