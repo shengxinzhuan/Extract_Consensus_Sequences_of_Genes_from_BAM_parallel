@@ -55,19 +55,19 @@ The purpose of this script is to merge consensus FASTA sequences obtained from s
 bash merge_all_sample_gene_pair.sh total_sample_folder merge_sample_folder
 
 input folder:
-|-total_sample_folder
-|--sample1
-|    |--rename_consensus
-|--sample2
-|    |--rename_consensus  
-|--sample3
-|    |--rename_consensus
-|--sample4
-|    |--rename_consensus
+|-total_sample_folder/
+|--sample1/
+|    |--rename_consensus/
+|--sample2/
+|    |--rename_consensus/
+|--sample3/
+|    |--rename_consensus/
+|--sample4/
+|    |--rename_consensus/
 
 output folder:
-|-merge_sample_folder
-|      |--raw_seq
+|-merge_sample_folder/
+|      |--raw_seq/
 ```
 ## filtered_fasta.sh
 Usage: bash filtered_fasta.sh <input_folder> <output_folder> <threshold_percentage><br />
@@ -79,18 +79,18 @@ The script logic involves traversing all *.fa files in the specified directory, 
 bash filtered_fasta.sh merge_sample_folder/raw_seq merge_sample_folder 70
 
 input_folder:
-|-merge_sample_folder
-|       |--raw_seq
+|-merge_sample_folder/
+|       |--raw_seq/
              |---1.fa,2.fa,3.fa,4.fa
 
 output_folder:
-|-merge_sample_folder
-|       |--raw_seq
+|-merge_sample_folder/
+|       |--raw_seq/
 |            |---1.fa,2.fa,3.fa,4.fa
 |            |---1.stats,2.stats,3.stats,4.stats # the AGCTN contents with per fasta files
-|       |--fail_seq # these fasta files with N >=70%
+|       |--fail_seq/ # these fasta files with N >=70%
 |            |---1.fa
-|       |--filtered_seq # these fasta files with N < 70%
+|       |--filtered_seq/ # these fasta files with N < 70%
 |            |---2.fa,3.fa,4.fa
 ```
 ## Phylogenetic tree construction
