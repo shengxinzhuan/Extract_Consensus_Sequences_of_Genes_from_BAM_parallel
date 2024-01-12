@@ -124,7 +124,7 @@ Here, we utilize software called "Newick Utilities" (which can be installed usin
 mkdir -p ../topo_stat/
 for i in *.bestTree ; do nw_topology $i > ../topo_stat/${i%.*}.topo.tree ; done
 
-# Subsequently, employ  sort and uniq to statistically analyze the distinct topological structures present (this information will be required for visualization purposes in subsequent steps).
+# Subsequently, employ  sort and uniq to statistically analyze the distinct topological structures present.
 cd ../topo/stat/
 cat *.tree | sort | uniq -c > total.topo.stat
 ```
@@ -154,8 +154,65 @@ Firstly, we concatenate the gene names with the tree topologies, taking into acc
 bash merge_gene_names_with_tree_topo.sh <input_folder>
 # The outputs were in an folder "merge_gene_and_topo" which localed in /<input_folder_path>/../merge_gene_and_topo
 cat merge_gene_and_topo/*.tree > total.gene_topo.txt
+
+# Demo output:
+Gene1  (((A,B),C),O);
+Gene2  (((A,C),B),O);
+......
 ```
 Subsequently, we utilize the ete3 package to process this file, harmonizing the topological structures within it into unique forms (ensuring consistency with the results obtained in the previous step). At this stage, we employ another script called "gene_with_only_topo.py".<br />
 ```
 python gene_with_only_topo.py total.gene_topo.txt total.gene_topo.resort.txt
+
+# Demo output:
+Gene_ID  Topology
+Gene1  (,O);(,C);(A,B)
+Gene2  (,O);(,B);(A,C)
+......
 ```
+Next, we need to remove the header of the output, and then perform final matching on the plotting file using sort|uniq <br />
+```
+awk 'NR > 1 {print $2}' total.gene_topo.resort.txt | sort | uniq > gene_topo_with_num.txt
+
+# Using the vim to add the number for each tree type
+# Before:
+(,O);(,C);(A,B)
+(,O);(,A);(C,B)
+(,O);(,B);(A,C)
+
+# After:(using tab to split)
+(,O);(,C);(A,B)  1
+(,O);(,A);(C,B)  2
+(,O);(,B);(A,C)  3
+
+# Then using the add_gene_tree_rank.py to change the total.gene_topo.resort.txt file column2 into gene_topo_with_num.txt column2
+
+python add_gene_tree_rank.py total.gene_topo.resort.txt gene_topo_with_num.txt > total.gene_topo_with_num.txt
+
+# Before:
+Gene_ID  Topology
+Gene1  (,O);(,C);(A,B)
+Gene2  (,O);(,B);(A,C)
+......
+
+# After:
+Gene1  1
+Gene2  2
+......
+```
+Next, we will extract the consensus bed file and use it, along with the obtained 'total.gene_topo_with_num.txt', as input files. Additionally, a configuration file specifying colors will also need to be created and provided as an input.<br />
+```
+# The bedfile column4 must same as total.gene_topo_with_num.txt (The bed file can include regions that have been filtered out.)
+# The format of the color configuration file is as follows: 
+1  #FF0000
+2  #00FF00
+3  #0000FF
+Unknown  #FFFFFF #(Please note that it should include an entry with the name "Unknown" to serve as the fill color for missing genes.)
+```
+After preparing these three input files, we can proceed to utilize the 'visual_heatmap.r' script for visualization purposes. Here, I provide outputs in two output formats – one where coordinates are based on chromosome lengths, and another where chromosome lengths are disregarded.
+```
+# Notice that this script were using the "ggplot2" and "dplyr" to data analysis.
+Rscript visual_plot.r total.gene_topo_with_num.txt total.bed color.config.txt
+```
+The result can be see as follow. Your can edit it using Adboe Illustrator or Affinit Designer.
+![image](https://github.com/shengxinzhuan/Extract_Consensus_Sequences_of_Genes_from_BAM_parallel/blob/main/topo_in_chromosome.with_length.jpg)
