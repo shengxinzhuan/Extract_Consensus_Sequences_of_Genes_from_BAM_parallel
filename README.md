@@ -18,6 +18,15 @@ The purpose of this script is to extract subsets of a given BAM file based on a 
   The BED file consists of four columns: the first column represents the chromosome name (it's acceptable for non-chromosomal levels), the second column denotes the starting coordinate (please note the coordinate difference between Samtools and Bedtools), the third column indicates the ending coordinate, and the fourth column contains the gene name (you are free to name it according to your preference, but typically, it aligns with the names found in GFF annotations). The delimiter used is the Tab key.<br />
   The output_dir is the name of the output directory. If you are working with population data or large samples, it is recommended to make it consistent with the sample names in the BAM files to facilitate subsequent evolution analysis.<br />
   threads controls the number of parallel extractions. The choice of this value depends on personal preference.<br />
+```
+# Here, it's recommended to use the sample.mkdup.bam obtained through the workflow involving bwa-samtools-picard
+# The recommended pipeline can be readed in this page: https://ming-lian.github.io/2019/02/08/call-snp/
+# The bed file refers to a BED  file extracted according to one's specific needs (it can be genes, exon, intron, or TE structure).
+# bed file format
+# <chr>\t<start>\t<end>\t<gene_name>
+# Demo Usage:
+bash generate_consensus_fasta_from_bam.sh sample.mkdup.bam gene.bed sample_consensus_dir 30
+```
 ## rename_fasta.sh
 Usage: bash rename_fasta.sh <input_folder> <replace_name><br />
 This script renames the extracted consensus FASTA sequences to a standardized species name or sample identifier. The output of the script is a rename_consensus folder generated in the same directory as the specified folder. Inside this folder, you will find the consensus FASTA sequences with their names modified accordingly.<br />
