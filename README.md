@@ -9,6 +9,8 @@ mafft or muscle <br />
 trimal or gblock <br />
 ete3 (python package, verison:3.1.3, which can be install using pip)<br />
 iqtree2 or raxml-ng <br />
+ggplot2<br />
+dplyr<br />
 # Usage
 The completed part consists of four scripts: generate_consensus_fasta_from_bam.sh, rename_fasta.sh, merge_all_sample_gene_pair.sh, and filtered_fasta.sh. Their functionalities are as follows:
 ## generate_consensus_fasta_from_bam.sh
