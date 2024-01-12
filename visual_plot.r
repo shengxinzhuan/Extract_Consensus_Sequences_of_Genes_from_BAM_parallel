@@ -1,5 +1,12 @@
 args <- commandArgs(trailingOnly = TRUE)
 
+#====================================================================================================================
+# Author: Alfred Hou
+# E-mail: 825526231@qq.com
+# Any question can send the e-mail to me
+# Time: 2024/01/11
+#====================================================================================================================
+
 if (length(args) != 3) {
   stop("\nUsage: Rscript viusal_heatmap.r <gene_and_topo.txt> <bed_file> <color_config>\nBoth input without header\n\n gene_and_topo.txt:\nGene1\ttype1(int)\nGene2\ttype2(int)\n......\n\n bed_file:\n chr\tstart\tend\tgene_name\n\n color_config:\ntype1\t#FFFFFF\ntype2\t#00FF00\n...\n", call. = FALSE)
 }
